@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>小出SC予定表</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap">
+<style>
+  :root {
+    --ink: #1e2420;
+    --ink-soft: #4a534c;
+    --bg: #f6f4ee;
+    --surface: #ffffff;
+    --surface-sunken: #eeece3;
+    --border: #ddd8c9;
+    --brand: #1f5c40;
+    --brand-ink: #ffffff;
+    --team-a: #2461b3;
+    --team-a-soft: #e1ebf8;
+    --team-b: #d6478f;
+    --team-b-soft: #fbe6f1;
+    --att-yes: #3f9142;
+    --att-no: #b3392c;
+    --att-maybe: #7c827a;
+    --att-none: #b7bcb4;
+    --badge-a: #1d4e8c;
+    --badge-b: #ad2570;
+    --shadow: 0 1px 2px rgba(30,36,32,0.06), 0 4px 14px rgba(30,36,32,0.06);
+    --radius-card: 14px;
+    --radius-chip: 999px;
+    color-scheme: light;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #eef1ec;
+      --ink-soft: #b7bfb6;
+      --bg: #12160f;
+      --surface: #1b2018;
+      --surface-sunken: #232a1f;
+      --border: #333b2d;
+      --brand: #7fcaa0;
+      --brand-ink: #0c1620;
+      --team-a: #6fa8e8;
+      --team-a-soft: #1c2a3d;
+      --team-b: #f2a0c8;
+      --team-b-soft: #3d2030;
+      --att-yes: #6fbf72;
+      --att-no: #e0776a;
+      --att-maybe: #a8afa4;
+      --att-none: #565f52;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 6px 20px rgba(0,0,0,0.35);
+      color-scheme: dark;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ink: #eef1ec;
+    --ink-soft: #b7bfb6;
+    --bg: #12160f;
+    --surface: #1b2018;
+    --surface-sunken: #232a1f;
+    --border: #333b2d;
+    --brand: #7fcaa0;
+    --brand-ink: #0c1620;
+    --team-a: #6fa8e8;
+    --team-a-soft: #1c2a3d;
+    --team-b: #f2a0c8;
+    --team-b-soft: #3d2030;
+    --att-yes: #6fbf72;
+    --att-no: #e0776a;
+    --att-maybe: #a8afa4;
+    --att-none: #565f52;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 6px 20px rgba(0,0,0,0.35);
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Noto Sans JP', 'Hiragino Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: 40px;
+  }
+
+  .shell {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 14px;
+  }
+
+  header.top {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--brand);
+    color: var(--brand-ink);
+    padding: 14px 16px 12px;
+    box-shadow: var(--shadow);
+  }
+
+  header.top .row1 {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  header.top h1 {
+    font-family: 'Oswald', 'Noto Sans JP', sans-serif;
+    font-weight: 700;
+    font-size: 21px;
+    letter-spacing: 0.02em;
+    margin: 0;
+  }
+
+  header.top .row1-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  header.top .note-export-btn {
+    font-size: 11px;
+    padding: 4px 9px;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--brand-ink) 40%, transparent);
+    background: color-mix(in srgb, var(--brand-ink) 12%, transparent);
+    color: var(--brand-ink);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  header.top .note-export-btn:active { opacity: 0.7; }
+
+  .note-export-status {
+    font-size: 11px;
+    color: var(--brand-ink);
+    opacity: 0.9;
+    padding: 0 16px;
+    min-height: 0;
+  }
+  .note-export-status:empty { display: none; }
+
+  header.top .updated {
+    font-size: 11px;
+    opacity: 0.75;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 6px;
+    margin-top: 12px;
+  }
+
+  .tab-btn {
+    flex: 1;
+    appearance: none;
+    border: 1px solid rgba(255,255,255,0.35);
+    background: transparent;
+    color: var(--brand-ink);
+    padding: 8px 10px;
+    border-radius: 10px;
+    font: inherit;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .tab-btn[aria-selected="true"] {
+    background: rgba(255,255,255,0.18);
+    border-color: rgba(255,255,255,0.7);
+    font-weight: 700;
+  }
+
+  .filters {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+
+  .chip {
+    appearance: none;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    color: var(--ink-soft);
+    padding: 5px 12px;
+    border-radius: var(--radius-chip);
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .chip .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .chip[aria-pressed="true"] { color: var(--ink); border-color: currentColor; }
+  .chip[data-team="A"][aria-pressed="true"] { color: var(--team-a); background: var(--team-a-soft); border-color: var(--team-a); }
+  .chip[data-team="B"][aria-pressed="true"] { color: var(--team-b); background: var(--team-b-soft); border-color: var(--team-b); }
+  .chip[data-team="both"][aria-pressed="true"] { color: var(--brand); border-color: var(--brand); background: var(--surface-sunken); }
+  .chip-jump { margin-left: auto; }
+  .chip-jump[hidden] { display: none; }
+
+  main { padding-top: 14px; }
+
+  /* ---------- List view ---------- */
+  .year-heading {
+    font-family: 'Oswald', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    margin: 22px 2px 6px;
+    scroll-margin-top: 178px;
+  }
+  .month-heading {
+    font-weight: 700;
+    font-size: 16px;
+    margin: 14px 2px 8px;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    scroll-margin-top: 178px;
+  }
+  .month-heading .num {
+    font-family: 'Oswald', sans-serif;
+    font-size: 20px;
+    color: var(--brand);
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 5px solid var(--team-a);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow);
+    padding: 12px 14px;
+    margin-bottom: 10px;
+  }
+  .card.team-B { border-left-color: var(--team-b); }
+
+  .card-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .card-date {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--ink-soft);
+    min-width: 64px;
+    line-height: 1.35;
+    font-variant-numeric: tabular-nums;
+  }
+  .card-date .dow { font-size: 11px; opacity: 0.8; }
+  .card-body { flex: 1; min-width: 0; }
+  .card-title-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .team-badge {
+    font-family: 'Oswald', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: var(--radius-chip);
+    color: #fff;
+    background: var(--badge-a);
+    letter-spacing: 0.03em;
+  }
+  .team-badge.B { background: var(--badge-b); }
+  .card-title { font-weight: 700; font-size: 15.5px; }
+  .card-time { font-size: 12.5px; color: var(--ink-soft); font-variant-numeric: tabular-nums; margin-top: 2px; }
+  .card-loc { font-size: 12.5px; color: var(--ink-soft); margin-top: 2px; }
+  .card-meet { font-size: 12.5px; color: var(--brand); font-weight: 700; margin-top: 2px; }
+  .card-desc {
+    font-size: 13px;
+    color: var(--ink);
+    margin-top: 8px;
+    white-space: pre-line;
+    line-height: 1.5;
+    background: var(--surface-sunken);
+    border-radius: 8px;
+    padding: 8px 10px;
+  }
+
+  .attend-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .attend-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    padding: 3px 8px 3px 6px;
+    border-radius: var(--radius-chip);
+    background: var(--surface-sunken);
+    color: var(--ink);
+  }
+  .attend-pill .dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+  .attend-empty { font-size: 12px; color: var(--ink-soft); font-style: normal; }
+
+  /* ---------- List view: compact table rows ---------- */
+  .month-table {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    margin-bottom: 14px;
+  }
+  .row-item.day-end .row-summary { border-bottom: 1px solid var(--border); }
+  .month-table .row-item:last-child .row-summary { border-bottom: none; }
+  .row-item.open .row-summary { background: var(--surface-sunken); }
+  .row-item.same-day .row-summary { padding-top: 3px; }
+  .row-summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    cursor: pointer;
+  }
+  .row-summary:focus-visible { outline: 2px solid var(--brand); outline-offset: -2px; }
+  .row-date {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--ink-soft);
+    min-width: 52px;
+    flex: none;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.3;
+  }
+  .row-main { flex: 1; min-width: 0; }
+  .row-title {
+    font-weight: 700;
+    font-size: 13.5px;
+    line-height: 1.3;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+  }
+  .row-time { font-size: 11px; color: var(--ink-soft); font-variant-numeric: tabular-nums; margin-top: 1px; }
+  .row-meet { color: var(--brand); font-weight: 700; }
+  .row-att {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1px;
+    font-size: 11px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    min-width: 44px;
+  }
+  .att-count.yes { color: var(--att-yes); }
+  .att-count.no { color: var(--att-no); }
+  .att-count.maybe { color: var(--att-maybe); }
+  .row-chev {
+    flex: none;
+    width: 14px;
+    text-align: center;
+    color: var(--ink-soft);
+    transition: transform 0.15s ease;
+  }
+  .row-item.open .row-chev { transform: rotate(90deg); }
+  .row-detail { padding: 2px 12px 12px 70px; }
+  .row-detail .card-loc, .row-detail .card-meet, .row-detail .card-desc { margin-top: 6px; }
+  .row-detail .attend-row { margin-top: 8px; }
+
+  .empty-state {
+    text-align: center;
+    color: var(--ink-soft);
+    padding: 60px 20px;
+    font-size: 14px;
+  }
+
+  /* ---------- Calendar view ---------- */
+  .cal-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 4px 0 10px;
+  }
+  .cal-nav button {
+    appearance: none;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--ink);
+    width: 34px; height: 34px;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  .cal-nav .month-label {
+    font-family: 'Oswald', sans-serif;
+    font-size: 19px;
+    font-weight: 600;
+  }
+
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    padding: 8px;
+    box-shadow: var(--shadow);
+  }
+  .cal-dow {
+    text-align: center;
+    font-size: 11px;
+    color: var(--ink-soft);
+    font-weight: 700;
+    padding-bottom: 4px;
+  }
+  .cal-cell {
+    aspect-ratio: 1 / 1;
+    border-radius: 9px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 4px;
+    gap: 3px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    background: transparent;
+    font: inherit;
+    color: inherit;
+  }
+  .cal-cell.pad { visibility: hidden; cursor: default; }
+  .cal-cell .n { font-family: 'Oswald', sans-serif; font-size: 14px; font-variant-numeric: tabular-nums; }
+  .cal-cell.today { background: var(--surface-sunken); }
+  .cal-cell.today .n { color: var(--brand); font-weight: 700; }
+  .cal-cell.selected { border-color: var(--brand); }
+  .cal-dots { display: flex; gap: 2px; }
+  .cal-dots .dot { width: 6px; height: 6px; border-radius: 50%; }
+
+  .cal-cell .note-mark { width: 14px; height: 3px; border-radius: 2px; background: var(--brand); margin-top: 1px; }
+
+  .note-box {
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius-card);
+    padding: 12px 14px;
+    margin: 14px 0 4px;
+  }
+  .note-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+  }
+  .note-input {
+    width: 100%;
+    min-height: 44px;
+    resize: vertical;
+    font: inherit;
+    font-size: 13.5px;
+    color: var(--ink);
+    background: var(--surface-sunken);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+  }
+  .note-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .note-save {
+    appearance: none;
+    border: none;
+    background: var(--brand);
+    color: var(--brand-ink);
+    font: inherit;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 7px 16px;
+    border-radius: var(--radius-chip);
+    cursor: pointer;
+  }
+  .note-status { font-size: 12px; color: var(--ink-soft); }
+  .note-unavailable { font-size: 12px; color: var(--ink-soft); font-style: italic; }
+  .note-readonly-text { font-size: 13.5px; color: var(--ink); white-space: pre-wrap; line-height: 1.5; }
+
+  .agenda-heading {
+    font-weight: 700;
+    font-size: 15px;
+    margin: 18px 2px 8px;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+  .agenda-heading .num { font-family:'Oswald', sans-serif; color: var(--brand); font-size: 19px; }
+
+  footer.note {
+    max-width: 720px;
+    margin: 30px auto 0;
+    padding: 0 16px;
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+
+<div class="shell">
+  <header class="top">
+    <div class="row1">
+      <h1>小出SC予定表</h1>
+      <div class="row1-right">
+        <span class="updated" id="updatedAt"></span>
+        <button class="note-export-btn" id="noteExportBtn" hidden>📋 メモをコピー</button>
+      </div>
+    </div>
+    <div class="note-export-status" id="noteExportStatus"></div>
+    <div class="tabs" role="tablist">
+      <button class="tab-btn" id="tabList" role="tab" aria-selected="true">リスト</button>
+      <button class="tab-btn" id="tabCal" role="tab" aria-selected="false">カレンダー</button>
+    </div>
+    <div class="filters" id="teamFilters">
+      <button class="chip" data-team="both" aria-pressed="true">両方</button>
+      <button class="chip" data-team="A" aria-pressed="false"><span class="dot" style="background:var(--team-a)"></span>Aチーム</button>
+      <button class="chip" data-team="B" aria-pressed="false"><span class="dot" style="background:var(--team-b)"></span>Bチーム</button>
+      <button class="chip chip-jump" id="jumpTodayBtn" aria-pressed="false">📅 今月へ</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="viewList"></section>
+    <section id="viewCal" hidden>
+      <div class="cal-nav">
+        <button id="calPrev" aria-label="前の月">‹</button>
+        <span class="month-label" id="calLabel"></span>
+        <button id="calNext" aria-label="次の月">›</button>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+      <div id="calAgenda"></div>
+    </section>
+  </main>
+
+  <footer class="note">
+    小出SCのサークルスクエア（A/B両アカウント）から取得した予定・コーチ出欠を表示しています。表示対象はサークルスクエアに登録済みの期間のみです。カレンダー画面の日付をタップすると、家庭用の個人メモ（サークルスクエアとは別データ）も1日1件登録できます。最新の予定を反映したいときは、Claudeとの会話で「更新して」と伝えてください。
+  </footer>
+</div>
+
+<script>
+  const EVENTS = [{"id": "9555318", "team": "A", "title": "市民総合スポーツ大会", "location": "トウチタグラウンド", "description": "会場運営　小出SC\n\nコート準備、本部設営あるのでご協力よろしくお願いします。", "allDay": true, "start": "2026-04-04T00:00:00", "end": "2026-04-05T00:00:00", "meetTime": "06:15", "meetPlace": "小出小学校部室前", "coachAttendance": [{"name": "米山 和寿", "status": "参加"}, {"name": "鈴木 啓司", "status": "参加"}, {"name": "斉藤 隆雄", "status": "参加"}, {"name": "増井 透", "status": "参加"}, {"name": "澤田 文", "status": "不参加"}, {"name": "畑 英樹", "status": "不参加"}, {"name": "天満 晃", "status": "不参加"}]}, {"id": "9556996", "team": "A", "title": "練習", "location": "小出小学校", "description": "", "allDay": false, "start": "2026-04-05T08:30:00", "end": "2026-04-05T12:00:00", "coachAttendance": [{"name": "鈴木 啓司", "status": "参加"}, {"name": "畑 英樹", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "天満 晃", "status": "不参加"}, {"name": "澤田 文", "status": "不参加"}, {"name": "斉藤 隆雄", "status": "不参加"}]}, {"id": "9557004", "team": "A", "title": "練習", "location": "", "description": "予選敗退につき、練習になります。", "allDay": false, "start": "2026-04-11T13:00:00", "end": "2026-04-11T16:30:00", "coachAttendance": [{"name": "澤田 文", "status": "参加"}, {"name": "畑 英樹", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "斉藤 隆雄", "status": "不参加"}, {"name": "鈴木 啓司", "status": "不参加"}, {"name": "天満 晃", "status": "不参加"}]}, {"id": "9557006", "team": "A", "title": "FAリーグ", "location": "大庭小学校", "description": "10:30 vs 大津FC\n11:10 副審1名\n11:50 副審1名\n12:30 vs 湘南ルベントSC\n13:10 主審\n14:30 TRM 鎌倉深沢SC\n\nおにぎりあり。", "allDay": false, "start": "2026-04-12T10:30:00", "end": "2026-04-12T15:30:00", "meetTime": "08:45", "meetPlace": "小出小学校部室前", "coachAttendance": [{"name": "増井 透", "status": "参加"}, {"name": "畑 英樹", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "天満 晃", "status": "不参加"}, {"name": "鈴木 啓司", "status": "不参加"}, {"name": "澤田 文", "status": "不参加"}, {"name": "斉藤 隆雄", "status": "不参加"}]}, {"id": "9557009", "team": "A", "title": "リーグ戦開会式", "location": "しおさい", "description": "リーグ戦開会式後、２試合あります。\nおにぎりあり。\n10:30　　         前審（副審）\n11:10　　　　   VS今宿\n11:50     　　　 後審（主審・４審）\n13:10   　　　    VSカルペソール", "allDay": true, "start": "2026-04-18T00:00:00", "end": "2026-04-19T00:00:00", "meetTime": "07:45", "meetPlace": "小出小学校部室前", "coachAttendance": [{"name": "増井 透", "status": "参加"}, {"name": "畑 英樹", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "天満 晃", "status": "不参加"}, {"name": "鈴木 啓司", "status": "不参加"}, {"name": "澤田 文", "status": "不参加"}, {"name": "斉藤 隆雄", "status": "不参加"}]}, {"id": "9557011", "team": "A", "title": "FAリーグ", "location": "小出小学校", "description": "9時00分　　VS逗子リトル\n9時45分　　主審\n10時45分　    副審\n11時25分　　VS城北Ｆ\n\nおにぎりなし。", "allDay": true, "start": "2026-04-19T00:00:00", "end": "2026-04-20T00:00:00", "meetTime": "07:30", "meetPlace": "小出小学校グラウンド", "coachAttendance": [{"name": "増井 透", "status": "参加"}, {"name": "天満 晃", "status": "参加"}, {"name": "澤田 文", "status": "参加"}, {"name": "鈴木 啓司", "status": "参加"}, {"name": "畑 英樹", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "斉藤 隆雄", "status": "不参加"}]}, {"id": "9557015", "team": "A", "title": "明治フリーパーズTRM", "location": "明治小学校", "description": "早昼で、おにぎりなし。\n\n※要項は13時開門となっていますが、12時30分開門となります。", "allDay": false, "start": "2026-04-25T13:00:00", "end": "2026-04-25T17:00:00", "meetTime": "12:00", "meetPlace": "小出小学校部室前", "coachAttendance": [{"name": "増井 透", "status": "参加"}, {"name": "鈴木 啓司", "status": "参加"}, {"name": "畑 英樹", "status": "参加"}, {"name": "斉藤 隆雄", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "天満 晃", "status": "不参加"}, {"name": "澤田 文", "status": "不参加"}]}, {"id": "9557021", "team": "A", "title": "FAリーグ", "location": "小出小学校", "description": "9:00    副審\n10:20   VS大庭レグルス\n11:00    主審\n13:00    VS鎌倉深沢（フレンドリー）\n\nおにぎりあり。\n\n設営と、選手集合時間分けます。\n\n設営、お手伝い２〜３人。\n7時30分小出小学校グラウンド。\nコート・本部設営、駐車場案内等。", "allDay": true, "start": "2026-04-26T00:00:00", "end": "2026-04-27T00:00:00", "meetTime": "09:00", "meetPlace": "小出小学校グラウンド", "coachAttendance": [{"name": "増井 透", "status": "参加"}, {"name": "天満 晃", "status": "参加"}, {"name": "澤田 文", "status": "参加"}, {"name": "鈴木 啓司", "status": "参加"}, {"name": "畑 英樹", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "斉藤 隆雄", "status": "不参加"}]}, {"id": "9557026", "team": "A", "title": "練習", "location": "小出小学校", "description": "４年市リーグの後、グラウンド使用可能なので１４時から練習します。", "allDay": false, "start": "2026-04-29T14:00:00", "end": "2026-04-29T17:00:00", "coachAttendance": [{"name": "増井 透", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "畑 英樹", "status": "不参加"}, {"name": "鈴木 啓司", "status": "不参加"}, {"name": "斉藤 隆雄", "status": "不参加"}, {"name": "澤田 文", "status": "不参加"}, {"name": "天満 晃", "status": "不参加"}]}, {"id": "9609235", "team": "A", "title": "綾南招待", "location": "綾瀬スポーツ公園", "description": "9:00　　副審（Ａコート）\n9:40　　VSオルグーリョ\n10:20　　主審（Bコート）\n11:00　　VS黒滝SC（Bコート）\n11:40　　主審（Bコート）\n12:20　　VS寒川SC\n\nおにぎりあり。\n審判服着用（2審制）", "allDay": true, "start": "2026-05-02T00:00:00", "end": "2026-05-03T00:00:00", "meetTime": "07:45", "meetPlace": "小出小学校部室前", "coachAttendance": [{"name": "畑 英樹", "status": "参加"}, {"name": "天満 晃", "status": "参加"}, {"name": "斉藤 隆雄", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "鈴木 啓司", "status": "参加"}, {"name": "増井 透", "status": "不参加"}, {"name": "澤田 文", "status": "不参加"}]}, {"id": "9609238", "team": "A", "title": "綾南招待", "location": "綾瀬スポーツ公園", "description": "下位パート\n\n11:00　　VS座間SC\n11:40　　審判\n\nおにぎりあり。", "allDay": true, "start": "2026-05-03T00:00:00", "end": "2026-05-04T00:00:00", "meetTime": "09:00", "meetPlace": "小出小学校部室前", "coachAttendance": [{"name": "畑 英樹", "status": "参加"}, {"name": "天満 晃", "status": "参加"}, {"name": "澤田 文", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "鈴木 啓司", "status": "参加"}, {"name": "増井 透", "status": "不参加"}, {"name": "斉藤 隆雄", "status": "不参加"}]}, {"id": "9639897", "team": "A", "title": "練習", "location": "小出小学校グラウンド", "description": "", "allDay": false, "start": "2026-05-04T08:30:00", "end": "2026-05-04T12:00:00", "coachAttendance": [{"name": "天満 晃", "status": "参加"}, {"name": "畑 英樹", "status": "参加"}, {"name": "澤田 文", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "増井 透", "status": "不参加"}, {"name": "斉藤 隆雄", "status": "不参加"}, {"name": "鈴木 啓司", "status": "不参加"}]}, {"id": "9639899", "team": "A", "title": "練習", "location": "小出小学校グラウンド", "description": "", "allDay": false, "start": "2026-05-05T08:30:00", "end": "2026-05-05T12:00:00", "coachAttendance": [{"name": "畑 英樹", "status": "参加"}, {"name": "澤田 文", "status": "参加"}, {"name": "米山 和寿", "status": "不参加"}, {"name": "天満 晃", "status": "不参加"}, {"name": "斉藤 隆雄", "status": "不参加"}, {"name": "鈴木 啓司", "status": "不参加"}]}, {"id": "9619279", "team": "A", "title": "秋葉台TRM", "location": "秋葉台小学校", "description": "おにぎりなし。", "allDay": true, "start": "2026-05-06T00:00:00", "end": "2026-05-07T00:00:00", "meetTime": "07:40", "meetPlace": "小出小学校部室前", "coachAttendance": [{"name": "天満 晃", "status": "参加"}, {"name": "増井 透", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "畑 英樹", "status": "不参加"}, {"name": "斉藤 隆雄", "status": "不参加"}, {"name": "澤田 文", "status": "不参加"}, {"name": "鈴木 啓司", "status": "不参加"}]}, {"id": "9637216", "team": "A", "title": "市リーグ", "location": "しおさい", "description": "9:00　　VS鶴が台スパイダース\n9:40　　主審\n11:00　　VS鶴嶺ＦＣ\n11:40　　主審\n\nおにぎり必要に応じて。", "allDay": true, "start": "2026-05-09T00:00:00", "end": "2026-05-10T00:00:00", "meetTime": "07:30", "meetPlace": "小出小学校部室前", "coachAttendance": [{"name": "天満 晃", "status": "参加"}, {"name": "畑 英樹", "status": "参加"}, {"name": "鈴木 啓司", "status": "参加"}, {"name": "斉藤 隆雄", "status": "参加"}, {"name": "澤田 文", "status": "参加"}, {"name": "増井 透", "status": "不参加"}, {"name": "米山 和寿", "status": "不参加"}]}, {"id": "9637219", "team": "A", "title": "FA予定", "location": "小出小学校", "description": "9:00　　VS鵠沼SC（副審１名）\n9:50　　VS鎌倉深沢（副審１名）\n10:40　　主審\n11:30　　VS鵠沼SC（TRM15分）\n11:50　　VS鎌倉深沢（TRM15分）\n\nおにぎり、コーチいりません。\n選手は状況に応じ、用意したければどーぞ。", "allDay": true, "start": "2026-05-10T00:00:00", "end": "2026-05-11T00:00:00", "meetTime": "07:30", "meetPlace": "小出小学校グラウンド", "coachAttendance": [{"name": "増井 透", "status": "参加"}, {"name": "天満 晃", "status": "参加"}, {"name": "畑 英樹", "status": "参加"}, {"name": "鈴木 啓司", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "斉藤 隆雄", "status": "不参加"}, {"name": "澤田 文", "status": "不参加"}]}, {"id": "9637222", "team": "A", "title": "市リーグ", "location": "しおさい", "description": "9:00　　副審\n10:20　　VS東海岸", "allDay": true, "start": "2026-05-16T00:00:00", "end": "2026-05-17T00:00:00", "meetTime": "08:00", "meetPlace": "小出小学校部室前", "coachAttendance": [{"name": "畑 英樹", "status": "参加"}, {"name": "鈴木 啓司", "status": "参加"}, {"name": "斉藤 隆雄", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "澤田 文", "status": "不参加"}, {"name": "天満 晃", "status": "不参加"}, {"name": "増井 透", "status": "未定/その他"}]}, {"id": "9637224", "team": "A", "title": "FAリーグ会場運営　TRM", "location": "小出小学校グラウンド", "description": "FA会場として運営が必要です。\nFAリーグ終後、TRMします。\n\n設営、運営のお手伝い、数名。\n集合（設営）　10:30\n\n集合（選手）　12:00\n13:30　　VSルベント（TRM）\n15:00　　VS鵠沼SC（TRM）\n15:50　　VS大庭レグルス（TRM）\n\n早昼でお願いします。", "allDay": false, "start": "2026-05-17T10:30:00", "end": "2026-05-17T17:00:00", "meetTime": "12:00", "coachAttendance": [{"name": "増井 透", "status": "参加"}, {"name": "天満 晃", "status": "参加"}, {"name": "畑 英樹", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "澤田 文", "status": "不参加"}, {"name": "鈴木 啓司", "status": "不参加"}, {"name": "斉藤 隆雄", "status": "不参加"}]}, {"id": "9637230", "team": "A", "title": "市リーグ", "location": "しおさい", "description": "15:30　　VSＦＣ504\n16:10　　主審", "allDay": true, "start": "2026-05-23T00:00:00", "end": "2026-05-24T00:00:00", "meetTime": "13:00", "meetPlace": "小出小学校部室前", "coachAttendance": [{"name": "増井 透", "status": "参加"}, {"name": "鈴木 啓司", "status": "参加"}, {"name": "畑 英樹", "status": "参加"}, {"name": "斉藤 隆雄", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "天満 晃", "status": "不参加"}, {"name": "澤田 文", "status": "不参加"}]}, {"id": "9637231", "team": "A", "title": "練習", "location": "", "description": "", "allDay": false, "start": "2026-05-24T08:30:00", "end": "2026-05-24T12:00:00", "coachAttendance": [{"name": "天満 晃", "status": "参加"}, {"name": "増井 透", "status": "参加"}, {"name": "畑 英樹", "status": "参加"}, {"name": "鈴木 啓司", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "斉藤 隆雄", "status": "不参加"}, {"name": "澤田 文", "status": "不参加"}]}, {"id": "9637234", "team": "A", "title": "練習", "location": "小出小学校グラウンド", "description": "", "allDay": false, "start": "2026-05-30T13:00:00", "end": "2026-05-30T17:00:00", "coachAttendance": [{"name": "畑 英樹", "status": "参加"}, {"name": "増井 透", "status": "不参加"}, {"name": "天満 晃", "status": "不参加"}, {"name": "鈴木 啓司", "status": "不参加"}, {"name": "斉藤 隆雄", "status": "不参加"}, {"name": "澤田 文", "status": "不参加"}, {"name": "米山 和寿", "status": "未定/その他"}]}, {"id": "9637236", "team": "A", "title": "FAリーグ", "location": "高谷小学校", "description": "13:00　　主審\n13:50　　VSＦＣ高谷\n\n14:35　鎌倉深沢（TRM20分）\n15:25　ＦＣ高谷（TRM20分）\n15:50　鎌倉深沢（TRM20分）", "allDay": true, "start": "2026-05-31T00:00:00", "end": "2026-06-01T00:00:00", "meetTime": "12:00", "meetPlace": "小出小学校部室前", "coachAttendance": [{"name": "増井 透", "status": "参加"}, {"name": "畑 英樹", "status": "参加"}, {"name": "鈴木 啓司", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "天満 晃", "status": "不参加"}, {"name": "澤田 文", "status": "不参加"}, {"name": "斉藤 隆雄", "status": "不参加"}]}, {"id": "9676811", "team": "A", "title": "練習", "location": "小出小学校グラウンド", "description": "運動会が順延にならなければ練習", "allDay": false, "start": "2026-06-07T08:30:00", "end": "2026-06-07T12:30:00", "coachAttendance": [{"name": "増井 透", "status": "参加"}, {"name": "天満 晃", "status": "参加"}, {"name": "畑 英樹", "status": "参加"}, {"name": "鈴木 啓司", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "澤田 文", "status": "不参加"}, {"name": "斉藤 隆雄", "status": "不参加"}]}, {"id": "9676812", "team": "A", "title": "練習", "location": "小出小学校グラウンド", "description": "", "allDay": false, "start": "2026-06-13T13:00:00", "end": "2026-06-13T17:00:00", "coachAttendance": [{"name": "増井 透", "status": "参加"}, {"name": "畑 英樹", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "斉藤 隆雄", "status": "不参加"}, {"name": "澤田 文", "status": "不参加"}, {"name": "天満 晃", "status": "不参加"}, {"name": "鈴木 啓司", "status": "不参加"}]}, {"id": "9676815", "team": "A", "title": "カバーロTRM", "location": "小出グラウンド", "description": "AMに大和のカバーロさんとTRMになりました。\n\nお昼なし。", "allDay": false, "start": "2026-06-14T08:00:00", "end": "2026-06-14T11:30:00", "meetTime": "08:00", "meetPlace": "小出グラウンド", "coachAttendance": [{"name": "増井 透", "status": "参加"}, {"name": "天満 晃", "status": "参加"}, {"name": "畑 英樹", "status": "参加"}, {"name": "鈴木 啓司", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "澤田 文", "status": "不参加"}, {"name": "斉藤 隆雄", "status": "不参加"}]}, {"id": "9676819", "team": "A", "title": "サマーカップ", "location": "しおさい", "description": "11:10　　VS梅田\n11:50　　勝敗にて主審or副審\n\nおにぎりあり。", "allDay": true, "start": "2026-06-20T00:00:00", "end": "2026-06-21T00:00:00", "meetTime": "09:00", "meetPlace": "小出小学校部室前", "coachAttendance": [{"name": "増井 透", "status": "参加"}, {"name": "畑 英樹", "status": "参加"}, {"name": "鈴木 啓司", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "斉藤 隆雄", "status": "不参加"}, {"name": "澤田 文", "status": "不参加"}, {"name": "天満 晃", "status": "不参加"}]}, {"id": "9676822", "team": "A", "title": "午前中、FA会場提供", "location": "小出小学校グラウンド", "description": "FAの会場提供と運営を午前中にやります。\n\n午後の練習なくなりました。", "allDay": false, "start": "2026-06-21T08:00:00", "end": "2026-06-21T12:00:00", "meetTime": "07:30", "meetPlace": "小出小学校グラウンド", "coachAttendance": [{"name": "天満 晃", "status": "参加"}, {"name": "畑 英樹", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "澤田 文", "status": "不参加"}, {"name": "斉藤 隆雄", "status": "不参加"}, {"name": "鈴木 啓司", "status": "不参加"}]}, {"id": "9676824", "team": "A", "title": "練習", "location": "小出グラウンド", "description": "", "allDay": false, "start": "2026-06-27T13:00:00", "end": "2026-06-27T17:00:00", "coachAttendance": [{"name": "畑 英樹", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "増井 透", "status": "不参加"}, {"name": "鈴木 啓司", "status": "不参加"}, {"name": "澤田 文", "status": "不参加"}, {"name": "斉藤 隆雄", "status": "不参加"}, {"name": "天満 晃", "status": "不参加"}]}, {"id": "9676827", "team": "A", "title": "練習", "location": "小出小学校グラウンド", "description": "", "allDay": false, "start": "2026-06-28T08:30:00", "end": "2026-06-28T12:00:00", "coachAttendance": [{"name": "天満 晃", "status": "参加"}, {"name": "畑 英樹", "status": "参加"}, {"name": "鈴木 啓司", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "澤田 文", "status": "不参加"}, {"name": "斉藤 隆雄", "status": "不参加"}, {"name": "増井 透", "status": "未定/その他"}]}, {"id": "9738006", "team": "A", "title": "練習", "location": "小出グラウンド", "description": "", "allDay": false, "start": "2026-07-04T13:00:00", "end": "2026-07-04T17:00:00", "coachAttendance": [{"name": "米山 和寿", "status": "参加"}, {"name": "増井 透", "status": "不参加"}, {"name": "天満 晃", "status": "不参加"}, {"name": "斉藤 隆雄", "status": "不参加"}, {"name": "澤田 文", "status": "不参加"}, {"name": "鈴木 啓司", "status": "不参加"}]}, {"id": "9738008", "team": "A", "title": "練習", "location": "小出グラウンド", "description": "", "allDay": false, "start": "2026-07-05T08:30:00", "end": "2026-07-05T12:00:00", "coachAttendance": [{"name": "澤田 文", "status": "参加"}, {"name": "増井 透", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "斉藤 隆雄", "status": "不参加"}, {"name": "鈴木 啓司", "status": "不参加"}, {"name": "天満 晃", "status": "未定/その他"}]}, {"id": "9738009", "team": "A", "title": "練習", "location": "小出グラウンド", "description": "", "allDay": false, "start": "2026-07-11T13:00:00", "end": "2026-07-11T17:00:00", "coachAttendance": [{"name": "米山 和寿", "status": "参加"}, {"name": "澤田 文", "status": "不参加"}, {"name": "斉藤 隆雄", "status": "不参加"}, {"name": "天満 晃", "status": "不参加"}, {"name": "増井 透", "status": "不参加"}, {"name": "鈴木 啓司", "status": "不参加"}]}, {"id": "9738012", "team": "A", "title": "練習", "location": "小出グラウンド", "description": "", "allDay": false, "start": "2026-07-12T08:30:00", "end": "2026-07-12T12:00:00", "coachAttendance": [{"name": "米山 和寿", "status": "参加"}, {"name": "澤田 文", "status": "不参加"}, {"name": "斉藤 隆雄", "status": "不参加"}, {"name": "増井 透", "status": "不参加"}, {"name": "鈴木 啓司", "status": "不参加"}, {"name": "天満 晃", "status": "未定/その他"}]}, {"id": "9738013", "team": "A", "title": "練習", "location": "小出グラウンド", "description": "", "allDay": false, "start": "2026-07-18T13:00:00", "end": "2026-07-18T17:00:00", "coachAttendance": [{"name": "天満 晃", "status": "参加"}, {"name": "澤田 文", "status": "参加"}, {"name": "増井 透", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "鈴木 啓司", "status": "不参加"}]}, {"id": "9738014", "team": "A", "title": "SUERTE FC　　　 ONE DAY大会", "location": "大磯運動公園", "description": "おにぎりあり。", "allDay": true, "start": "2026-07-19T00:00:00", "end": "2026-07-20T00:00:00", "meetTime": "07:00", "meetPlace": "小出小学校部室前", "coachAttendance": [{"name": "天満 晃", "status": "参加"}, {"name": "増井 透", "status": "参加"}, {"name": "鈴木 啓司", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "斉藤 隆雄", "status": "不参加"}, {"name": "澤田 文", "status": "不参加"}]}, {"id": "9756272", "team": "A", "title": "お休み", "location": "小出グラウンド", "description": "", "allDay": true, "start": "2026-07-20T00:00:00", "end": "2026-07-21T00:00:00", "coachAttendance": [{"name": "米山 和寿", "status": "参加"}, {"name": "鈴木 啓司", "status": "参加"}, {"name": "天満 晃", "status": "不参加"}, {"name": "澤田 文", "status": "不参加"}]}, {"id": "9557056", "team": "A", "title": "小出SC　バーベキュー", "location": "やまのうえパーク", "description": "", "allDay": true, "start": "2026-07-25T00:00:00", "end": "2026-07-26T00:00:00", "coachAttendance": []}, {"id": "9795109", "team": "B", "title": "小出SC　バーベキュー", "location": "赤羽根やまのうえパーク", "description": "", "allDay": true, "start": "2026-07-25T00:00:00", "end": "2026-07-26T00:00:00", "coachAttendance": []}, {"id": "9795116", "team": "B", "title": "グランツカップ", "location": "梅田小学校", "description": "【2026】第22回 U11 グランツカップ大会要綱+.pdf\n\n持ち物：\nユニフォーム一式(緑・白)、ボール、水筒(多めに用意)、すねあて、着替え、タオル、おにぎり、補食\n\n注意事項等：\n各自、暑さ対策をお願いします。", "allDay": true, "start": "2026-07-26T00:00:00", "end": "2026-07-27T00:00:00", "meetTime": "08:00", "meetPlace": "小出小　部室前", "coachAttendance": [{"name": "五島 裕文", "status": "参加"}, {"name": "鈴木 啓司", "status": "参加"}]}, {"id": "9738022", "team": "A", "title": "練習", "location": "小出グラウンド", "description": "", "allDay": false, "start": "2026-07-26T08:30:00", "end": "2026-07-26T12:00:00", "coachAttendance": [{"name": "増井 透", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "斉藤 隆雄", "status": "不参加"}, {"name": "天満 晃", "status": "不参加"}, {"name": "澤田 文", "status": "不参加"}, {"name": "鈴木 啓司", "status": "不参加"}]}, {"id": "9787701", "team": "A", "title": "練習", "location": "小出小学校グラウンド", "description": "", "allDay": false, "start": "2026-08-01T08:30:00", "end": "2026-08-01T12:00:00", "coachAttendance": [{"name": "米山 和寿", "status": "参加"}, {"name": "増井 透", "status": "参加"}, {"name": "天満 晃", "status": "不参加"}, {"name": "澤田 文", "status": "不参加"}, {"name": "鈴木 啓司", "status": "不参加"}]}, {"id": "9795122", "team": "B", "title": "TRM @柳島", "location": "小出小学校", "description": "小出小学校部室前　10:45集合\n各自、暑さ対策よろしくお願いします！\n早昼で補食有りでお願いします。\n\nTRM要項\n・審判は両チームより1人ずつの2審制\n・審判の声掛けOK\n・15分-5分-15分　※前後半それぞれで2分間の給水タイムを入れる\n・審判服は特に必要なし\n・1試合目と2試合目に間は10分休憩とする\n\n11:30：柳島開場（クレーでアップ）\n※12:30より人口芝が使えます。\n12:30：グランド設営準備\n12:45：1試合目　※準備でき次第始めます。\n13:35：2試合目\n14:15：片づけ\n\n■場所\n柳島しおさい公園（人工芝）\nhttps://share.google/uBNXn1u0zcneMa09A\n※公園内に有料パーキング有", "allDay": false, "start": "2026-08-01T10:30:00", "end": "2026-08-01T14:00:00", "coachAttendance": [{"name": "鈴木 啓司", "status": "参加"}, {"name": "五島 裕文", "status": "参加"}, {"name": "米山 元貴", "status": "不参加"}]}, {"id": "9787702", "team": "A", "title": "練習", "location": "小出小学校グラウンド", "description": "", "allDay": false, "start": "2026-08-02T08:30:00", "end": "2026-08-02T12:00:00", "coachAttendance": [{"name": "天満 晃", "status": "参加"}, {"name": "増井 透", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "澤田 文", "status": "不参加"}, {"name": "鈴木 啓司", "status": "不参加"}]}, {"id": "9795123", "team": "B", "title": "練習", "location": "小出小学校", "description": "", "allDay": false, "start": "2026-08-02T08:30:00", "end": "2026-08-02T12:00:00", "coachAttendance": [{"name": "鈴木 啓司", "status": "参加"}, {"name": "五島 裕文", "status": "参加"}, {"name": "米山 元貴", "status": "不参加"}]}, {"id": "9795297", "team": "B", "title": "お休み", "location": "", "description": "", "allDay": true, "start": "2026-08-08T00:00:00", "end": "2026-08-12T00:00:00", "coachAttendance": []}, {"id": "9787703", "team": "A", "title": "今宿TRM", "location": "今宿小学校", "description": "", "allDay": false, "start": "2026-08-08T13:00:00", "end": "2026-08-08T16:30:00", "meetTime": "12:45", "meetPlace": "小出小学校部室前", "coachAttendance": [{"name": "畑 英樹", "status": "参加"}, {"name": "澤田 文", "status": "参加"}, {"name": "米山 和寿", "status": "不参加"}, {"name": "斉藤 隆雄", "status": "不参加"}, {"name": "増井 透", "status": "不参加"}, {"name": "天満 晃", "status": "不参加"}, {"name": "鈴木 啓司", "status": "不参加"}]}, {"id": "9787704", "team": "A", "title": "練習", "location": "小出小学校グラウンド", "description": "", "allDay": false, "start": "2026-08-09T08:30:00", "end": "2026-08-09T12:00:00", "coachAttendance": [{"name": "増井 透", "status": "参加"}, {"name": "畑 英樹", "status": "参加"}, {"name": "天満 晃", "status": "不参加"}, {"name": "澤田 文", "status": "不参加"}, {"name": "米山 和寿", "status": "不参加"}, {"name": "鈴木 啓司", "status": "不参加"}]}, {"id": "9787710", "team": "A", "title": "お休み", "location": "", "description": "", "allDay": true, "start": "2026-08-11T00:00:00", "end": "2026-08-12T00:00:00", "coachAttendance": []}, {"id": "9795126", "team": "B", "title": "お休み", "location": "", "description": "※練習の予定から、お休みに変更になります。", "allDay": true, "start": "2026-08-15T00:00:00", "end": "2026-08-16T00:00:00", "coachAttendance": [{"name": "鈴木 啓司", "status": "参加"}, {"name": "五島 裕文", "status": "参加"}, {"name": "米山 元貴", "status": "未定/その他"}]}, {"id": "9787705", "team": "A", "title": "練習", "location": "小出小学校グラウンド", "description": "", "allDay": false, "start": "2026-08-15T08:30:00", "end": "2026-08-15T12:30:00", "coachAttendance": [{"name": "鈴木 啓司", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "斉藤 隆雄", "status": "不参加"}, {"name": "天満 晃", "status": "不参加"}, {"name": "澤田 文", "status": "不参加"}]}, {"id": "9795129", "team": "B", "title": "練習", "location": "小出小学校", "description": "", "allDay": false, "start": "2026-08-16T08:30:00", "end": "2026-08-16T12:00:00", "coachAttendance": [{"name": "鈴木 啓司", "status": "参加"}, {"name": "五島 裕文", "status": "参加"}, {"name": "米山 元貴", "status": "不参加"}]}, {"id": "9787709", "team": "A", "title": "小出小学校TRM", "location": "小出小学校グラウンド", "description": "TRMになります。\n要項は後日。", "allDay": false, "start": "2026-08-16T12:30:00", "end": "2026-08-16T16:30:00", "meetTime": "12:30", "meetPlace": "小出小学校グラウンド", "coachAttendance": [{"name": "増井 透", "status": "参加"}, {"name": "天満 晃", "status": "参加"}, {"name": "鈴木 啓司", "status": "参加"}, {"name": "畑 英樹", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "澤田 文", "status": "不参加"}]}, {"id": "9787712", "team": "A", "title": "Mt.FUJI やきそばカップ", "location": "フジスパークフィールド", "description": "遠征合宿\n\n鈴木コーチがしおり作成中。\n乞うご期待。", "allDay": true, "start": "2026-08-22T00:00:00", "end": "2026-08-25T00:00:00", "meetTime": "07:00", "meetPlace": "小出小学校部室前", "coachAttendance": [{"name": "畑 英樹", "status": "参加"}, {"name": "天満 晃", "status": "参加"}, {"name": "澤田 文", "status": "参加"}, {"name": "鈴木 啓司", "status": "参加"}, {"name": "増井 透", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}]}, {"id": "9795131", "team": "B", "title": "練習", "location": "小出小学校", "description": "", "allDay": false, "start": "2026-08-22T08:30:00", "end": "2026-08-22T12:00:00", "coachAttendance": [{"name": "五島 裕文", "status": "参加"}, {"name": "鈴木 啓司", "status": "不参加"}, {"name": "米山 元貴", "status": "不参加"}]}, {"id": "9795133", "team": "B", "title": "練習", "location": "小出小学校", "description": "", "allDay": false, "start": "2026-08-23T08:30:00", "end": "2026-08-23T12:00:00", "coachAttendance": [{"name": "五島 裕文", "status": "参加"}, {"name": "鈴木 啓司", "status": "不参加"}, {"name": "米山 元貴", "status": "不参加"}]}, {"id": "9787715", "team": "A", "title": "練習", "location": "小出小学校グラウンド", "description": "", "allDay": false, "start": "2026-08-29T08:30:00", "end": "2026-08-29T12:00:00", "coachAttendance": [{"name": "畑 英樹", "status": "参加"}, {"name": "澤田 文", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "天満 晃", "status": "不参加"}, {"name": "鈴木 啓司", "status": "不参加"}]}, {"id": "9795136", "team": "B", "title": "練習", "location": "小出小学校", "description": "", "allDay": false, "start": "2026-08-29T08:30:00", "end": "2026-08-29T12:00:00", "coachAttendance": [{"name": "鈴木 啓司", "status": "参加"}, {"name": "五島 裕文", "status": "参加"}, {"name": "米山 元貴", "status": "不参加"}]}, {"id": "9787717", "team": "A", "title": "練習", "location": "小出小学校グラウンド", "description": "", "allDay": false, "start": "2026-08-30T08:30:00", "end": "2026-08-30T12:00:00", "coachAttendance": [{"name": "増井 透", "status": "参加"}, {"name": "畑 英樹", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "天満 晃", "status": "不参加"}, {"name": "澤田 文", "status": "不参加"}, {"name": "鈴木 啓司", "status": "不参加"}]}, {"id": "9795137", "team": "B", "title": "練習", "location": "小出小学校", "description": "", "allDay": false, "start": "2026-08-30T08:30:00", "end": "2026-08-30T12:00:00", "coachAttendance": [{"name": "米山 元貴", "status": "参加"}, {"name": "鈴木 啓司", "status": "参加"}, {"name": "五島 裕文", "status": "参加"}]}, {"id": "9837863", "team": "B", "title": "練習", "location": "小出小学校", "description": "", "allDay": false, "start": "2026-09-05T13:00:00", "end": "2026-09-05T16:00:00", "coachAttendance": [{"name": "五島 裕文", "status": "参加"}, {"name": "米山 元貴", "status": "参加"}, {"name": "鈴木 啓司", "status": "参加"}]}, {"id": "9808950", "team": "B", "title": "サマーカップ（予選）※チビリンピック茅ケ崎予選会", "location": "しおさい", "description": "2026年度チビリンピック_要項・対戦表ver.4.pdf\n\nスケジュール：\n10:30　vs 浜見平\n11:15　副審(504 vs カルペ)\n13:30　vs 松林\n14:15　主審(カルペ vs 梅田)\n\n持ち物：\nユニフォーム一式(緑・白)、ボール、水筒(多めに用意)、すねあて、着替え、タオル、おにぎり、補食\n\n注意事項等：\n・まだまだ暑いと思いますので、各自、暑さ対策をお願いします。\n・雨天決行の予定です。", "allDay": true, "start": "2026-09-06T00:00:00", "end": "2026-09-07T00:00:00", "meetTime": "08:30", "meetPlace": "小出小　部室前", "coachAttendance": [{"name": "鈴木 啓司", "status": "参加"}, {"name": "五島 裕文", "status": "参加"}, {"name": "米山 元貴", "status": "不参加"}]}, {"id": "9843389", "team": "A", "title": "後期FAリーグ", "location": "小出グラウンド", "description": "9:10 vsOZ湘南\n10:30 vsスワクラブ\n\n8:50 副審2名\n11:10 副審1名\n13:10 副審1名\n13:50 主審1名\n\n選手は2試合目終わり次第解散。\n\nコーチ、後援会数名で片付けお願いします。", "allDay": false, "start": "2026-09-06T07:00:00", "end": "2026-09-06T11:30:00", "meetTime": "07:00", "meetPlace": "小出グラウンド", "coachAttendance": [{"name": "畑 英樹", "status": "参加"}, {"name": "鈴木 啓司", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "澤田 文", "status": "不参加"}]}, {"id": "9843391", "team": "A", "title": "練習", "location": "小出グラウンド", "description": "", "allDay": false, "start": "2026-09-12T13:00:00", "end": "2026-09-12T17:00:00", "coachAttendance": [{"name": "畑 英樹", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "鈴木 啓司", "status": "不参加"}, {"name": "澤田 文", "status": "不参加"}]}, {"id": "9837862", "team": "B", "title": "練習", "location": "小出小学校", "description": "", "allDay": false, "start": "2026-09-12T13:00:00", "end": "2026-09-12T16:00:00", "coachAttendance": [{"name": "五島 裕文", "status": "参加"}, {"name": "鈴木 啓司", "status": "参加"}, {"name": "米山 元貴", "status": "不参加"}]}, {"id": "9837877", "team": "B", "title": "サマーカップ決勝トーナメント or 午後練習", "location": "", "description": "9/6の結果で確定となります。", "allDay": true, "start": "2026-09-13T00:00:00", "end": "2026-09-14T00:00:00", "coachAttendance": [{"name": "鈴木 啓司", "status": "参加"}, {"name": "五島 裕文", "status": "不参加"}, {"name": "米山 元貴", "status": "不参加"}]}, {"id": "9843392", "team": "A", "title": "練習", "location": "小出グラウンド", "description": "", "allDay": false, "start": "2026-09-13T08:30:00", "end": "2026-09-13T12:00:00", "coachAttendance": [{"name": "畑 英樹", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "澤田 文", "status": "不参加"}]}, {"id": "9843396", "team": "A", "title": "Aリーグ", "location": "しおさい公園", "description": "9:00 vs松林\n10:20 vs松浪\n\n9:40　副審\n11:00　主審", "allDay": false, "start": "2026-09-19T07:00:00", "end": "2026-09-19T11:15:00", "meetTime": "07:00", "meetPlace": "小出小学校部室前", "coachAttendance": [{"name": "鈴木 啓司", "status": "参加"}, {"name": "畑 英樹", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "澤田 文", "status": "不参加"}]}, {"id": "9837864", "team": "B", "title": "練習", "location": "小出小学校", "description": "", "allDay": false, "start": "2026-09-19T13:00:00", "end": "2026-09-19T16:00:00", "coachAttendance": [{"name": "鈴木 啓司", "status": "参加"}, {"name": "五島 裕文", "status": "参加"}]}, {"id": "9843413", "team": "A", "title": "後期FAリーグ", "location": "小出グラウンド", "description": "9:10 vsFC小坂\n13:10 vs寒川旭SC\n\n8:30 副審2名\n13:50 副審2名\n\nおにぎりあり。", "allDay": false, "start": "2026-09-20T07:00:00", "end": "2026-09-20T15:00:00", "meetTime": "07:00", "meetPlace": "小出グラウンド", "coachAttendance": [{"name": "鈴木 啓司", "status": "参加"}, {"name": "畑 英樹", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "澤田 文", "status": "参加"}]}, {"id": "9837868", "team": "B", "title": "市リーグ", "location": "しおさい", "description": "スケジュール：\n11:00　主審/4審(小和田red vs 今宿A2)\n12:20　vs 小和田red\n\n持ち物：\nユニフォーム一式(緑・白)、ボール、水筒、すねあて、着替え、タオル、おにぎり、補食\n\n注意事項等：\n・到着後、11時の審判に行っている間におにぎりを食べる予定。", "allDay": true, "start": "2026-09-21T00:00:00", "end": "2026-09-22T00:00:00", "meetTime": "10:00", "meetPlace": "小出小　部室前", "coachAttendance": [{"name": "五島 裕文", "status": "参加"}, {"name": "鈴木 啓司", "status": "参加"}]}, {"id": "9843414", "team": "A", "title": "練習", "location": "小出グラウンド", "description": "", "allDay": false, "start": "2026-09-21T08:30:00", "end": "2026-09-21T12:00:00", "coachAttendance": [{"name": "米山 和寿", "status": "参加"}, {"name": "澤田 文", "status": "参加"}, {"name": "鈴木 啓司", "status": "不参加"}, {"name": "畑 英樹", "status": "不参加"}]}, {"id": "9843415", "team": "A", "title": "練習", "location": "小出グラウンド", "description": "", "allDay": false, "start": "2026-09-22T08:30:00", "end": "2026-09-22T12:00:00", "coachAttendance": [{"name": "米山 和寿", "status": "参加"}, {"name": "澤田 文", "status": "参加"}, {"name": "鈴木 啓司", "status": "不参加"}, {"name": "畑 英樹", "status": "不参加"}]}, {"id": "9839277", "team": "B", "title": "練習", "location": "小出小学校", "description": "", "allDay": false, "start": "2026-09-22T08:30:00", "end": "2026-09-22T11:30:00", "coachAttendance": []}, {"id": "9837870", "team": "B", "title": "市リーグ", "location": "しおさい", "description": "スケジュール：\n11:40　vs 鶴が台\n12:20　主審/4審＋副審(浜見平 vs 松浪)\n13:00　vs 鶴嶺\n13:40　主審(浜見平 vs 504)\n\n持ち物：\nユニフォーム一式(緑・白)、ボール、水筒、すねあて、着替え、タオル、おにぎり、補食\n\n注意事項等：\n・1試合目と2試合目の間に軽くおにぎり。2試合目終了後残りのおにぎりを食べる予定。", "allDay": true, "start": "2026-09-23T00:00:00", "end": "2026-09-24T00:00:00", "meetTime": "09:45", "meetPlace": "小出小　部室前", "coachAttendance": [{"name": "五島 裕文", "status": "参加"}, {"name": "鈴木 啓司", "status": "参加"}]}, {"id": "9843417", "team": "A", "title": "練習", "location": "小出グラウンド", "description": "", "allDay": false, "start": "2026-09-23T08:30:00", "end": "2026-09-23T12:00:00", "coachAttendance": [{"name": "米山 和寿", "status": "参加"}, {"name": "澤田 文", "status": "参加"}, {"name": "鈴木 啓司", "status": "不参加"}, {"name": "畑 英樹", "status": "不参加"}]}, {"id": "9843419", "team": "A", "title": "Aリーグ", "location": "東チタグラウンド", "description": "14:30 vs小和田\n\n15:10 主審・4審", "allDay": true, "start": "2026-09-26T00:00:00", "end": "2026-09-27T00:00:00", "meetTime": "13:00", "meetPlace": "小出小学校部室前", "coachAttendance": [{"name": "鈴木 啓司", "status": "参加"}, {"name": "畑 英樹", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}, {"name": "澤田 文", "status": "不参加"}]}, {"id": "9837872", "team": "B", "title": "練習", "location": "小出小学校", "description": "", "allDay": false, "start": "2026-09-26T13:00:00", "end": "2026-09-26T16:00:00", "coachAttendance": [{"name": "五島 裕文", "status": "参加"}, {"name": "鈴木 啓司", "status": "不参加"}]}, {"id": "9843432", "team": "A", "title": "後期FAリーグ", "location": "小出グラウンド", "description": "11:10 vs長井W\n13:50 vs山崎SC\n\n8:30　副審2名\n12:30　主審1名\n13:10　副審1名\n\nコーチ、後援会数名　7:00集合　設営、本部対応\n\n選手　9:30集合\n\nおにぎりあり。", "allDay": false, "start": "2026-09-27T07:00:00", "end": "2026-09-27T15:00:00", "meetTime": "09:30", "meetPlace": "小出グラウンド", "coachAttendance": [{"name": "鈴木 啓司", "status": "参加"}, {"name": "澤田 文", "status": "参加"}, {"name": "畑 英樹", "status": "参加"}, {"name": "米山 和寿", "status": "参加"}]}, {"id": "9837874", "team": "B", "title": "練習", "location": "小出小学校", "description": "", "allDay": false, "start": "2026-09-27T13:00:00", "end": "2026-09-27T16:00:00", "coachAttendance": [{"name": "五島 裕文", "status": "参加"}, {"name": "鈴木 啓司", "status": "参加"}]}];
+  const LAST_UPDATED = "2026年9月4日 9:03";
+  const STATIC_NOTES = {"2026-09-05": "ゆいちゃん出勤\n10:00 美容院", "2026-09-19": "9:30 みき歯医者（16,500円！）", "2026-09-26": "ゆいちゃん出勤\n9:30 あきみき歯医者"};
+
+  const TEAM_LABEL = { A: 'A', B: 'B' };
+  const ATT_COLOR = {
+    '参加': 'var(--att-yes)',
+    '不参加': 'var(--att-no)',
+    '未定/その他': 'var(--att-maybe)',
+    'キャンセル待ち': 'var(--att-maybe)',
+    '出欠メモのみ': 'var(--att-none)',
+  };
+
+  function pad2(n){ return String(n).padStart(2,'0'); }
+  function parseLocal(s){
+    // "YYYY-MM-DD" or "YYYY-MM-DDTHH:MM:SS"
+    const [datePart, timePart] = s.split('T');
+    const [y,m,d] = datePart.split('-').map(Number);
+    if (timePart){
+      const [hh,mm] = timePart.split(':').map(Number);
+      return new Date(y, m-1, d, hh, mm);
+    }
+    return new Date(y, m-1, d);
+  }
+  function addDays(date, n){ const d = new Date(date); d.setDate(d.getDate()+n); return d; }
+  function ymd(date){ return `${date.getFullYear()}-${pad2(date.getMonth()+1)}-${pad2(date.getDate())}`; }
+  const DOW = ['日','月','火','水','木','金','土'];
+
+  // Precompute normalized event objects
+  const items = EVENTS.map(e => {
+    const start = parseLocal(e.start);
+    let end = e.end ? parseLocal(e.end) : start;
+    if (e.allDay) end = addDays(end, -1); // iCal DTEND is exclusive
+    return { ...e, startDate: start, endDate: end };
+  }).sort((a,b) => {
+    // Same day: always Aチーム before Bチーム, regardless of time. Otherwise, chronological.
+    const dayA = ymd(a.startDate), dayB = ymd(b.startDate);
+    if (dayA !== dayB) return a.startDate - b.startDate;
+    if (a.team !== b.team) return a.team === 'A' ? -1 : 1;
+    return a.startDate - b.startDate;
+  });
+
+  function fiscalYear(date){
+    // April(4) start
+    const y = date.getFullYear();
+    return date.getMonth() >= 3 ? y : y - 1;
+  }
+
+  function eventsOnDay(date){
+    const key = ymd(date);
+    return items.filter(e => ymd(e.startDate) <= key && key <= ymd(e.endDate));
+  }
+
+  function fmtDateRange(e){
+    const s = e.startDate, en = e.endDate;
+    const sStr = `${s.getMonth()+1}/${s.getDate()}(${DOW[s.getDay()]})`;
+    if (e.allDay){
+      if (ymd(s) === ymd(en)) return sStr;
+      const enStr = `${en.getMonth()+1}/${en.getDate()}(${DOW[en.getDay()]})`;
+      return `${sStr}〜${enStr}`;
+    }
+    const time = `${pad2(s.getHours())}:${pad2(s.getMinutes())}`;
+    const endTime = en ? `${pad2(en.getHours())}:${pad2(en.getMinutes())}` : '';
+    return { sStr, time, endTime };
+  }
+
+  function attendRowHtml(list){
+    if (!list || list.length === 0) return '<span class="attend-empty">出欠情報なし</span>';
+    return list.map(p => {
+      const color = ATT_COLOR[p.status] || 'var(--att-none)';
+      return `<span class="attend-pill"><span class="dot" style="background:${color}"></span>${escapeHtml(p.name)} ${escapeHtml(p.status)}</span>`;
+    }).join('');
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function attendSummary(list){
+    if (!list || list.length === 0) return '<span class="attend-empty">—</span>';
+    const counts = { yes: 0, no: 0, maybe: 0 };
+    list.forEach(p => {
+      if (p.status === '参加') counts.yes++;
+      else if (p.status === '不参加') counts.no++;
+      else if (p.status === '未定/その他' || p.status === 'キャンセル待ち') counts.maybe++;
+    });
+    const parts = [];
+    if (counts.yes) parts.push(`<span class="att-count yes">参加${counts.yes}</span>`);
+    if (counts.no) parts.push(`<span class="att-count no">不参加${counts.no}</span>`);
+    if (counts.maybe) parts.push(`<span class="att-count maybe">未定${counts.maybe}</span>`);
+    if (parts.length === 0) return '<span class="attend-empty">—</span>';
+    return parts.join('');
+  }
+
+  function extractMeetTimes(e){
+    const times = [];
+    const seen = new Set();
+    const add = (t) => {
+      if (!t) return;
+      const norm = t.replace(/^0(\d:)/, '$1'); // "09:30" -> "9:30" で重複判定を揃える
+      if (seen.has(norm)) return;
+      seen.add(norm);
+      times.push(norm);
+    };
+    // サークルスクエアの「集合日時」専用フィールド（構造化データ）を優先的に採用
+    add(e.meetTime);
+    // 説明文中に埋め込まれた「HH:MM集合」表記も拾う（構造化フィールドが無い予定用）
+    const desc = e.description;
+    if (desc) {
+      const re = /(\d{1,2}:\d{2})\s*集合/g;
+      let m;
+      while ((m = re.exec(desc))) add(m[1]);
+    }
+    return times;
+  }
+
+  function rowHtml(e, opts){
+    opts = opts || {};
+    const dateInfo = fmtDateRange(e);
+    let dateBlock, timeBlock;
+    if (e.allDay){
+      dateBlock = typeof dateInfo === 'string' ? dateInfo : '';
+      timeBlock = '終日';
+    } else {
+      dateBlock = dateInfo.sStr;
+      timeBlock = dateInfo.endTime ? `${dateInfo.time}〜${dateInfo.endTime}` : dateInfo.time;
+    }
+    const meetTimes = extractMeetTimes(e);
+    if (meetTimes.length) timeBlock += ` <span class="row-meet">・集合 ${meetTimes.join('/')}</span>`;
+    const dateCell = opts.sameAsPrev ? '' : dateBlock;
+    const rowClasses = ['row-item'];
+    if (opts.sameAsPrev) rowClasses.push('same-day');
+    if (!opts.sameAsNext) rowClasses.push('day-end');
+    return `
+      <div class="${rowClasses.join(' ')}" data-id="${e.id}">
+        <div class="row-summary" role="button" tabindex="0" aria-expanded="false">
+          <div class="row-date">${dateCell}</div>
+          <span class="team-badge ${e.team}">${TEAM_LABEL[e.team]}</span>
+          <div class="row-main">
+            <div class="row-title">${escapeHtml(e.title)}</div>
+            <div class="row-time">${timeBlock}</div>
+          </div>
+          <div class="row-att">${attendSummary(e.coachAttendance)}</div>
+          <span class="row-chev">›</span>
+        </div>
+        <div class="row-detail" hidden>
+          ${e.location ? `<div class="card-loc">📍 ${escapeHtml(e.location)}</div>` : ''}
+          ${e.description ? `<div class="card-desc">${escapeHtml(e.description)}</div>` : ''}
+          <div class="attend-row">${attendRowHtml(e.coachAttendance)}</div>
+        </div>
+      </div>`;
+  }
+
+  function cardHtml(e){
+    const dateInfo = fmtDateRange(e);
+    let dateBlock, timeBlock;
+    if (e.allDay){
+      dateBlock = typeof dateInfo === 'string' ? dateInfo : '';
+      timeBlock = '終日';
+    } else {
+      dateBlock = dateInfo.sStr;
+      timeBlock = dateInfo.endTime ? `${dateInfo.time}〜${dateInfo.endTime}` : dateInfo.time;
+    }
+    return `
+      <div class="card team-${e.team}">
+        <div class="card-head">
+          <div class="card-date">${dateBlock}</div>
+          <div class="card-body">
+            <div class="card-title-row">
+              <span class="team-badge ${e.team}">${TEAM_LABEL[e.team]}</span>
+              <span class="card-title">${escapeHtml(e.title)}</span>
+            </div>
+            <div class="card-time">${timeBlock}</div>
+            ${e.location ? `<div class="card-loc">📍 ${escapeHtml(e.location)}</div>` : ''}
+            ${e.meetTime ? `<div class="card-meet">🕒 集合 ${escapeHtml(e.meetTime)}${e.meetPlace ? `（${escapeHtml(e.meetPlace)}）` : ''}</div>` : ''}
+            ${e.description ? `<div class="card-desc">${escapeHtml(e.description)}</div>` : ''}
+            <div class="attend-row">${attendRowHtml(e.coachAttendance)}</div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  // ---------------- personal notes (db capability) ----------------
+  let notesMap = {};
+  let dbReady = null; // null = unknown yet, false = unavailable, true = available
+  let dbInstance = null;
+  let dbPromise = null;
+  function getDb(){
+    if (!dbPromise){
+      dbPromise = (async () => {
+        try {
+          if (!window.claude || !window.claude.use) { dbReady = false; return null; }
+          const db = await window.claude.use('db');
+          dbInstance = db;
+          dbReady = !!db;
+          return db;
+        } catch(e) { dbReady = false; return null; }
+      })();
+    }
+    return dbPromise;
+  }
+  (async () => {
+    const db = await getDb();
+    if (!db) { dbReady = false; return; }
+    try {
+      db.collection('notes').onSnapshot(snap => {
+        const next = {};
+        snap.docs.forEach(doc => { next[doc.id] = (doc.data() || {}).text || ''; });
+        notesMap = next;
+        const exportBtn = document.getElementById('noteExportBtn');
+        if (exportBtn) exportBtn.hidden = false;
+        if (state.view === 'cal') { renderCalGrid(); renderAgenda(); }
+      });
+    } catch(e) { dbReady = false; }
+  })();
+
+  function wireNoteExport(){
+    const btn = document.getElementById('noteExportBtn');
+    if (!btn) return;
+    btn.addEventListener('click', async () => {
+      const status = document.getElementById('noteExportStatus');
+      const nonEmpty = {};
+      Object.keys(notesMap).forEach(k => { if (notesMap[k] && notesMap[k].trim()) nonEmpty[k] = notesMap[k]; });
+      const json = JSON.stringify(nonEmpty);
+      try {
+        await navigator.clipboard.writeText(json);
+        status.textContent = 'コピーしました。「更新して」の際にこの内容を貼り付けてください。';
+      } catch(e) {
+        window.prompt('コピーできませんでした。下の内容を手動でコピーしてください:', json);
+      }
+      setTimeout(() => { if (status) status.textContent = ''; }, 6000);
+    });
+  }
+  wireNoteExport();
+
+  // ---------------- state ----------------
+  let state = { view: 'list', team: 'both', calYear: null, calMonth: null, selectedDate: null };
+  try {
+    const saved = JSON.parse(localStorage.getItem('koide-sc-prefs') || '{}');
+    if (saved.view) state.view = saved.view;
+    if (saved.team) state.team = saved.team;
+  } catch(e) {}
+
+  function savePrefs(){
+    try { localStorage.setItem('koide-sc-prefs', JSON.stringify({ view: state.view, team: state.team })); } catch(e) {}
+  }
+
+  function filteredItems(){
+    if (state.team === 'both') return items;
+    return items.filter(e => e.team === state.team);
+  }
+
+  function renderList(){
+    const container = document.getElementById('viewList');
+    const list = filteredItems();
+    if (list.length === 0){
+      container.innerHTML = '<div class="empty-state">表示できる予定がありません。</div>';
+      return;
+    }
+    let html = '';
+    let curFY = null, curMonth = null;
+    let tableOpen = false;
+    for (let i = 0; i < list.length; i++){
+      const e = list[i];
+      const fy = fiscalYear(e.startDate);
+      const m = e.startDate.getMonth()+1;
+      if (fy !== curFY){
+        if (tableOpen){ html += '</div>'; tableOpen = false; }
+        html += `<div class="year-heading">${fy}年度</div>`;
+        curFY = fy; curMonth = null;
+      }
+      if (m !== curMonth){
+        if (tableOpen){ html += '</div>'; tableOpen = false; }
+        const ym = `${e.startDate.getFullYear()}-${pad2(m)}`;
+        html += `<div class="month-heading" data-ym="${ym}"><span class="num">${m}</span>月</div>`;
+        curMonth = m;
+      }
+      if (!tableOpen){ html += '<div class="month-table">'; tableOpen = true; }
+      const dayKey = ymd(e.startDate);
+      const prevKey = i > 0 ? ymd(list[i-1].startDate) : null;
+      const nextKey = i < list.length - 1 ? ymd(list[i+1].startDate) : null;
+      html += rowHtml(e, { sameAsPrev: dayKey === prevKey, sameAsNext: dayKey === nextKey });
+    }
+    if (tableOpen) html += '</div>';
+    container.innerHTML = html;
+  }
+
+  function renderCalGrid(){
+    const grid = document.getElementById('calGrid');
+    const label = document.getElementById('calLabel');
+    const y = state.calYear, m = state.calMonth;
+    label.textContent = `${y}年 ${m+1}月`;
+    const firstDow = new Date(y, m, 1).getDay();
+    const daysInMonth = new Date(y, m+1, 0).getDate();
+    const today = new Date();
+    let html = DOW.map(d => `<div class="cal-dow">${d}</div>`).join('');
+    for (let i=0;i<firstDow;i++) html += `<div class="cal-cell pad"></div>`;
+    const teamSet = state.team === 'both' ? ['A','B'] : [state.team];
+    for (let d=1; d<=daysInMonth; d++){
+      const date = new Date(y,m,d);
+      const dayEvents = eventsOnDay(date).filter(e => teamSet.includes(e.team));
+      const isToday = ymd(date) === ymd(today);
+      const isSel = state.selectedDate === ymd(date);
+      const dots = dayEvents.slice(0,4).map(e => `<span class="dot" style="background:var(--team-${e.team === 'A' ? 'a' : 'b'})"></span>`).join('');
+      const dateKey = ymd(date);
+      const noteText = dbReady === false ? ((STATIC_NOTES && STATIC_NOTES[dateKey]) || '') : (notesMap[dateKey] || '');
+      const noteMark = noteText.trim() ? '<span class="note-mark"></span>' : '';
+      html += `<button class="cal-cell${isToday?' today':''}${isSel?' selected':''}" data-date="${dateKey}">
+        <span class="n">${d}</span>
+        <span class="cal-dots">${dots}</span>
+        ${noteMark}
+      </button>`;
+    }
+    grid.innerHTML = html;
+    grid.querySelectorAll('.cal-cell:not(.pad)').forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.selectedDate = btn.dataset.date;
+        renderCalGrid();
+        renderAgenda();
+      });
+    });
+  }
+
+  function renderAgenda(){
+    const el = document.getElementById('calAgenda');
+    if (!state.selectedDate){ el.innerHTML = ''; return; }
+    const dateKey = state.selectedDate;
+    const [y,m,d] = dateKey.split('-').map(Number);
+    const date = new Date(y,m-1,d);
+    const teamSet = state.team === 'both' ? ['A','B'] : [state.team];
+    const dayEvents = eventsOnDay(date).filter(e => teamSet.includes(e.team));
+    let html = `<div class="agenda-heading"><span class="num">${m}/${d}</span>(${DOW[date.getDay()]})の予定</div>`;
+    if (dayEvents.length === 0){
+      html += '<div class="empty-state">この日の予定はありません。</div>';
+    } else {
+      html += dayEvents.map(cardHtml).join('');
+    }
+    html += noteBoxHtml(dateKey);
+    el.innerHTML = html;
+    wireNoteBox(dateKey);
+  }
+
+  function noteBoxHtml(dateKey){
+    if (dbReady === false){
+      const staticText = (STATIC_NOTES && STATIC_NOTES[dateKey]) || '';
+      if (staticText.trim()){
+        return `<div class="note-box note-readonly"><span class="note-label">📌 個人メモ（参照のみ）</span><div class="note-readonly-text">${escapeHtml(staticText)}</div></div>`;
+      }
+      return `<div class="note-box note-readonly"><span class="note-label">📌 個人メモ</span><span class="note-unavailable">この日の個人メモは登録されていません。</span></div>`;
+    }
+    const text = notesMap[dateKey] || '';
+    return `<div class="note-box">
+      <label class="note-label" for="noteInput">📌 個人メモ（サークルスクエアとは別の家庭用メモ・1日1件）</label>
+      <textarea id="noteInput" class="note-input" placeholder="例: ゆいちゃん出勤／歯医者 9:00 など">${escapeHtml(text)}</textarea>
+      <div class="note-actions">
+        <button class="note-save" id="noteSaveBtn">保存</button>
+        <span class="note-status" id="noteStatus"></span>
+      </div>
+    </div>`;
+  }
+
+  function wireNoteBox(dateKey){
+    const btn = document.getElementById('noteSaveBtn');
+    if (!btn) return;
+    btn.addEventListener('click', async () => {
+      const input = document.getElementById('noteInput');
+      const status = document.getElementById('noteStatus');
+      const value = input.value;
+      status.textContent = '保存中…';
+      try {
+        const db = await getDb();
+        if (!db) throw new Error('no-db');
+        await db.doc(`notes/${dateKey}`).set({ text: value, updatedAt: Date.now() });
+        status.textContent = '保存しました';
+      } catch(e) {
+        status.textContent = '保存できませんでした';
+      }
+      setTimeout(() => { if (status) status.textContent = ''; }, 2500);
+    });
+  }
+
+  function setView(view){
+    state.view = view;
+    savePrefs();
+    document.getElementById('tabList').setAttribute('aria-selected', String(view==='list'));
+    document.getElementById('tabCal').setAttribute('aria-selected', String(view==='cal'));
+    document.getElementById('viewList').hidden = view !== 'list';
+    document.getElementById('viewCal').hidden = view !== 'cal';
+    document.getElementById('jumpTodayBtn').hidden = view !== 'list';
+    if (view === 'list') renderList();
+    else { renderCalGrid(); renderAgenda(); }
+    window.scrollTo(0, 0);
+  }
+
+  function jumpToCurrentMonth(){
+    const now = new Date();
+    const targetYm = `${now.getFullYear()}-${pad2(now.getMonth()+1)}`;
+    const headings = Array.from(document.querySelectorAll('#viewList .month-heading'));
+    if (headings.length === 0) return;
+    let target = headings.find(h => h.dataset.ym === targetYm);
+    if (!target) target = headings.find(h => h.dataset.ym > targetYm); // next upcoming month
+    if (!target) target = headings[headings.length - 1]; // fall back to most recent past month
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function setTeam(team){
+    state.team = team;
+    savePrefs();
+    document.querySelectorAll('#teamFilters .chip').forEach(c => {
+      c.setAttribute('aria-pressed', String(c.dataset.team === team));
+    });
+    if (state.view === 'list') renderList();
+    else { renderCalGrid(); renderAgenda(); }
+  }
+
+  document.getElementById('viewList').addEventListener('click', (ev) => {
+    const btn = ev.target.closest('.row-summary');
+    if (!btn) return;
+    const item = btn.closest('.row-item');
+    const detail = item.querySelector('.row-detail');
+    const expanded = btn.getAttribute('aria-expanded') === 'true';
+    btn.setAttribute('aria-expanded', String(!expanded));
+    detail.hidden = expanded;
+    item.classList.toggle('open', !expanded);
+  });
+  document.getElementById('viewList').addEventListener('keydown', (ev) => {
+    if (ev.key !== 'Enter' && ev.key !== ' ') return;
+    const btn = ev.target.closest('.row-summary');
+    if (!btn) return;
+    ev.preventDefault();
+    btn.click();
+  });
+
+  document.getElementById('tabList').addEventListener('click', () => setView('list'));
+  document.getElementById('tabCal').addEventListener('click', () => setView('cal'));
+  document.getElementById('teamFilters').addEventListener('click', (ev) => {
+    const btn = ev.target.closest('.chip');
+    if (btn && btn.dataset.team) setTeam(btn.dataset.team);
+  });
+  document.getElementById('jumpTodayBtn').addEventListener('click', jumpToCurrentMonth);
+  document.getElementById('calPrev').addEventListener('click', () => {
+    state.calMonth--; if (state.calMonth < 0){ state.calMonth = 11; state.calYear--; }
+    renderCalGrid();
+  });
+  document.getElementById('calNext').addEventListener('click', () => {
+    state.calMonth++; if (state.calMonth > 11){ state.calMonth = 0; state.calYear++; }
+    renderCalGrid();
+  });
+
+  // init
+  (function init(){
+    document.getElementById('updatedAt').textContent = `最終更新 ${LAST_UPDATED}`;
+    const now = new Date();
+    state.calYear = now.getFullYear();
+    state.calMonth = now.getMonth();
+    state.selectedDate = ymd(now);
+    document.querySelectorAll('#teamFilters .chip').forEach(c => {
+      c.setAttribute('aria-pressed', String(c.dataset.team === state.team));
+    });
+    setView(state.view);
+  })();
+</script>
+
+</body>
+</html>
